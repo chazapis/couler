@@ -46,6 +46,7 @@ class Workflow(object):
         self.tolerations = []
         self.service_account = None
         self.security_context = None
+        self.artifact_repository_ref = None
 
     def add_template(self, template: Template):
         self.templates.update({template.name: template})
@@ -155,6 +156,11 @@ class Workflow(object):
             workflow_spec["securityContext"] = dict()
             for key, value in self.security_context.items():
                 workflow_spec["securityContext"][key] = value
+
+        if self.artifact_repository_ref:
+            workflow_spec["artifactRepositoryRef"] = dict()
+            for key, value in self.artifact_repository_ref.items():
+                workflow_spec["artifactRepositoryRef"][key] = value
 
         if self.volumes:
             workflow_spec.update({"volumes": self.volumes})
@@ -278,6 +284,11 @@ class Workflow(object):
             raise TypeError("security_context should be a dict")
         self.security_context = security_context
 
+    def set_artifact_repository_ref(self, artifact_repository_ref: dict):
+        if not isinstance(artifact_repository_ref, dict):
+            raise TypeError("artifact_repository_ref should be a dict")
+        self.artifact_repository_ref = artifact_repository_ref
+
     def cleanup(self):
         self.name = None
         self.timeout = None
@@ -296,5 +307,6 @@ class Workflow(object):
         self.tolerations = []
         self.service_account = None
         self.security_context = None
+        self.artifact_repository_ref = None
         self.dns_config = None
         self.dns_policy = None
